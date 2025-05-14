@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: springboot-mongodb-ttl
+  data:
+    mongodb:
+      uri: mongodb://root:secret@localhost:27017/mydatabase?authSource=admin
+      database: mydatabase
+      auto-index-creation: true
+
+ttl:
+  employee:
+    name: employee
+    expire-after: 300

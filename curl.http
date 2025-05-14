@@ -1,0 +1,14 @@
+POST http://localhost:8080/create
+Content-Type: application/json
+
+{
+    "departmentName": "Finance",
+    "employeeName": "John Doe"
+}
+
+###
+
+GET http://localhost:8080/
+Accept: application/json
+
+###
