@@ -10,4 +10,4 @@ spring:
 ttl:
   employee:
     name: employee
-    expire-after: 300
+    expire-after: 1

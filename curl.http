@@ -3,12 +3,19 @@ Content-Type: application/json
 
 {
     "departmentName": "Finance",
-    "employeeName": "John Doe"
+    "employeeName": "one"
 }
 
 ###
 
 GET http://localhost:8080/
 Accept: application/json
+
+###
+
+PUT http://localhost:8080/update/682f23ce0ed59956eea01da3?ttl=10
+Content-Type: application/json
+
+{}
 
 ###

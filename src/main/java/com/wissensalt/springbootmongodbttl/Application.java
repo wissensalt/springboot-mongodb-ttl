@@ -1,5 +1,6 @@
 package com.wissensalt.springbootmongodbttl;
 
+import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,8 +18,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -39,8 +44,8 @@ public class Application {
     return args -> {
       mongoTemplate.indexOps(Employee.class)
           .ensureIndex(new Index()
-              .on("expiredAt", DESC)
-              .expire(ttlProperty.getEmployee().getExpireAfter(), TimeUnit.SECONDS));
+              .on("expiredAt", ASC)
+              .expire(0, TimeUnit.SECONDS));
     };
   }
 
@@ -55,8 +60,24 @@ public class Application {
     employee.setDepartmentId(department.getId());
     employee.setName(request.getEmployeeName());
     employee.setCreatedAt(Instant.now());
-    employee.setExpiredAt(Instant.now().plusSeconds(ttlProperty.getEmployee().getExpireAfter()));
     employeeRepository.save(employee);
+
+    return true;
+  }
+
+  @PutMapping("/update/{id}")
+  private boolean updateTTLIndexOnEmployee(
+      @PathVariable String id,
+      @RequestParam("ttl") long ttl
+  ) {
+    Optional<Employee> employee = employeeRepository.findById(new ObjectId(id));
+    if (employee.isEmpty()) {
+      return false;
+    }
+
+    Employee employeeToUpdate = employee.get();
+    employeeToUpdate.setExpiredAt(Instant.now().plusSeconds(ttl));
+    employeeRepository.save(employeeToUpdate);
 
     return true;
   }

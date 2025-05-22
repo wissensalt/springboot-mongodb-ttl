@@ -14,7 +14,7 @@ public class Department {
   @Id
   private ObjectId id;
 
-  @Indexed(name = "ttl", expireAfter = "600s")
+  @Indexed(name = "ttl", expireAfter = "1s")
   private Instant createdAt;
 
   private String name;
